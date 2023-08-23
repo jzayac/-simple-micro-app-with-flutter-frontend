@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  RESET_PASSWORD
+  VERIFY_EMAIL
+}
+
+model State {
+  id              Int      @id @default(autoincrement())
+  stateName       String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  County          County[]
+}
+
+model County {
+  id              Int      @id @default(autoincrement())
+  countyName      String
+  countyFips      String
+
+  state           State      @relation(fields: [stateId], references: [id])
+  stateId         Int
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  City            City[]
+}
+
+model City {
+  id             Int         @id @default(autoincrement())
+  cityName       String
+  cityAscii      String
+  lat            Float
+  lng            Float
+  population     Int
+  density        Float
+  source         String
+  military       Boolean
+  incorporated   Boolean
+  timezone       String
+  ranking        Int
+  zips           String
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  county         County      @relation(fields: [countyId], references: [id])
+  countyId       Int
+}
